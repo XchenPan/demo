@@ -1,3 +1,6 @@
+#ifndef __PCBQUEUE_H_
+#define __PCBQUEUE_H_
+
 #include "pcb.h"
 #include <stdlib.h>
 #include <memory.h>
@@ -44,16 +47,16 @@ ngx_queue_t* get_queue_max_prio_node(ngx_queue_t *list) {
 }
 
 int pcb_ready_queue_insert(ngx_queue_t *list, char *name, int round, int cputime) {
-    pcb_t *pcb = malloc(sizeof(pcb_t));
+    pcb_t *pcb = (pcb_t*)malloc(sizeof(pcb_t));
     if (pcb == NULL) {
         return -1;
     }
     memset(pcb, 0, sizeof(pcb_t));
     pcb->name = name;
-    pcb->prio = 50 - pcb->needtime;
     pcb->round = round;
     pcb->cputime = cputime;
     pcb->needtime = cputime;
+    pcb->prio = 100 - pcb->needtime;
     pcb->state = p_ready;
     pcb->count = get_queue_count(list);
     ngx_queue_insert_tail(list, &pcb->list);
@@ -89,26 +92,4 @@ pcb_t *pcb_queue_pop(ngx_queue_t *list) {
     }
     return ngx_queue_data(q, pcb_t, list);
 }
-
-int main(int argc, char const *argv[])
-{
-    ngx_queue_t ready_queue;
-    ngx_queue_t running_queue;
-    ngx_queue_t finished_queue;
-
-    ngx_queue_init(&ready_queue);
-    ngx_queue_init(&running_queue);
-    ngx_queue_init(&finished_queue);
-
-    pcb_ready_queue_insert(&ready_queue, "panchen", 50, 50);
-    pcb_ready_queue_insert(&ready_queue, "bapie", 70, 50);
-    pcb_ready_queue_insert(&ready_queue, "panchen", 20, 50);
-    pcb_ready_queue_insert(&ready_queue, "panchen", 43, 50);
-    pcb_ready_queue_insert(&ready_queue, "bapie", 34, 50);
-    pcb_ready_queue_insert(&ready_queue, "hello", 23, 50);
-    pcb_queue_pop(&ready_queue);
-    
-
-    get_all_pcb(&ready_queue);
-    return 0;
-}
+#endif  /*__PCBQUEUE_H_*/

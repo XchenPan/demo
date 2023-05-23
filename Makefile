@@ -1,2 +1,2 @@
 all:
-	gcc -g pcb.c -I./ -o pcb
+	gcc -g test.c -I./ -o test
