@@ -1,64 +1,95 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "PCB.h"
+#ifndef __NGX_QUEUE_H_
+#define __NGX_QUEUE_H_
 
-typedef struct PCB
-{
-    char *name;         //进程标识符
-    int prio;           //进程优先数
-    int round;          //进程时间片轮转时间片
-    int cputime;        //进程占用CPU时间
-    int needtime;       //进程到完成还需要的时间
-    int count;          //计数器
-    char *state;        //进程的状态
-    struct node* next;  //链指针
-}PCB;
 
-typedef struct PCBQueue {
-	PCB* first;
-	PCB* Last;
-	int length;
-}PCBQueue;
+typedef struct ngx_queue_s  ngx_queue_t;
 
-void Queueinit(PCBQueue* queue) {
-	if (queue == NULL) {
-		return;
-	}
-	queue->length = 0;
-	queue->Last = (PCB*)malloc(sizeof(PCB));
-	queue->Last->next = NULL;
-	queue->first = queue->Last;
-}
- 
-PCBQueue* QueueCreate() {
-	PCBQueue* pcbqueue = (PCBQueue*)malloc(sizeof(PCBQueue));
-    Queueinit(pcbqueue);
-    return pcbqueue;
-}
+struct ngx_queue_s {
+    ngx_queue_t  *prev;
+    ngx_queue_t  *next;
+};
 
-PCBQueue* QueueInsert(PCBQueue* pcbqueue, char *name, int prio, int round, int cputime, int needtime, int count, char *state) {
-	PCB* newPcb = (PCB*)malloc(sizeof(PCB));
-    newPcb->name = name;
-    newPcb->prio = prio;
-    newPcb->round = round;
-    newPcb->cputime = cputime;
-    newPcb->needtime = needtime;
-    newPcb->count = count;
-    newPcb->state = state;
-    newPcb->next =NULL;
-    if (pcbqueue->Last == NULL) {
-        pcbqueue->Last = pcbqueue->first = newPcb;
-        pcbqueue->length++;
-    }
-    else {
-        while (pcbqueue->Last->next != NULL)
-            pcbqueue->Last = pcbqueue->Last->next;
-        pcbqueue->Last->next = newPcb;
-        pcbqueue->length++;
-    }
-}
 
-void EnterQueue(PCBQueue* pcbqueue, PCB* pcb) {
-    PCBQueue* p = NULL;
-    p->Last = pcbqueue->first;
-}
+#define ngx_queue_init(q)                                                     \
+    (q)->prev = q;                                                            \
+    (q)->next = q
+
+
+#define ngx_queue_empty(h)                                                    \
+    (h == (h)->prev)
+
+
+#define ngx_queue_insert_head(h, x)                                           \
+    (x)->next = (h)->next;                                                    \
+    (x)->next->prev = x;                                                      \
+    (x)->prev = h;                                                            \
+    (h)->next = x
+
+
+#define ngx_queue_insert_after   ngx_queue_insert_head
+
+
+#define ngx_queue_insert_tail(h, x)                                           \
+    (x)->prev = (h)->prev;                                                    \
+    (x)->prev->next = x;                                                      \
+    (x)->next = h;                                                            \
+    (h)->prev = x
+
+
+#define ngx_queue_head(h)                                                     \
+    (h)->next
+
+
+#define ngx_queue_last(h)                                                     \
+    (h)->prev
+
+
+#define ngx_queue_sentinel(h)                                                 \
+    (h)
+
+
+#define ngx_queue_next(q)                                                     \
+    (q)->next
+
+
+#define ngx_queue_prev(q)                                                     \
+    (q)->prev
+
+
+#if (NGX_DEBUG)
+
+#define ngx_queue_remove(x)                                                   \
+    (x)->next->prev = (x)->prev;                                              \
+    (x)->prev->next = (x)->next;                                              \
+    (x)->prev = NULL;                                                         \
+    (x)->next = NULL
+
+#else
+
+#define ngx_queue_remove(x)                                                   \
+    (x)->next->prev = (x)->prev;                                              \
+    (x)->prev->next = (x)->next
+
+#endif
+
+
+#define ngx_queue_split(h, q, n)                                              \
+    (n)->prev = (h)->prev;                                                    \
+    (n)->prev->next = n;                                                      \
+    (n)->next = q;                                                            \
+    (h)->prev = (q)->prev;                                                    \
+    (h)->prev->next = h;                                                      \
+    (q)->prev = n;
+
+
+#define ngx_queue_add(h, n)                                                   \
+    (h)->prev->next = (n)->next;                                              \
+    (n)->next->prev = (h)->prev;                                              \
+    (h)->prev = (n)->prev;                                                    \
+    (h)->prev->next = h;
+
+
+#define ngx_queue_data(q, type, link)                                         \
+    (type *) ((char *) q - offsetof(type, link))
+
+#endif 

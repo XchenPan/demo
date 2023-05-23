@@ -1,0 +1,13 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-g",
+      "-I./",
+      "pcb.c"
+    ],
+    "directory": "/home/panchen/Desktop/OS/进程调度/demo",
+    "file": "/home/panchen/Desktop/OS/进程调度/demo/pcb.c"
+  }
+]
