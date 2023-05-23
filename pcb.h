@@ -2,6 +2,9 @@
 #define __PCB__H__
 
 #include "queue.h"
+
+enum { p_ready = 0, p_running, p_finished, };
+
 typedef struct pcb_s pcb_t;
 struct pcb_s
 {
@@ -11,8 +14,8 @@ struct pcb_s
     int cputime;        //进程占用CPU时间
     int needtime;       //进程到完成还需要的时间
     int count;          //计数器
-    char *state;        //进程的状态
-    ngx_queue_t        list;
+    int state;          //进程的状态
+    ngx_queue_t list;
 };
 
 
