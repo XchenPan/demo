@@ -1,4 +1,5 @@
 #include "pcbqueue.h"
+#include "thread.h"
 
 void readyQueue(ngx_queue_t *ready_queue) {
     int round = 5;

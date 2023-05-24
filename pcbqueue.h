@@ -15,12 +15,8 @@ void get_all_pcb(ngx_queue_t *list) {//打印队列
         printf("该队列为空!\n");
         return;
     }
-    for (q = ngx_queue_head(list);
-        q != ngx_queue_sentinel(list);
-        q = ngx_queue_next(q)) {
-        
+    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
         node = ngx_queue_data(q, pcb_t, list);
-
         printf("pid: %s     prio: %d    needtime: %d    state: %d\n", node->name, node->prio, node->needtime, node->state);
     }
 }
@@ -30,15 +26,13 @@ ngx_queue_t* get_queue_max_prio_node(ngx_queue_t *list) {
     ngx_queue_t *q;
     ngx_queue_t *target_node;
     pcb_t *node;
-    for (q = ngx_queue_head(list);
-        q != ngx_queue_sentinel(list);
-        q = ngx_queue_next(q)) {
-            node = ngx_queue_data(q, pcb_t, list);
-            if (node->prio >= max_prio) {
-                max_prio = node->prio;
-                target_node = q;
-            }
+    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
+        node = ngx_queue_data(q, pcb_t, list);
+        if (node->prio >= max_prio) {
+            max_prio = node->prio;
+            target_node = q;
         }
+    }
     return target_node;
 }
 
@@ -86,9 +80,7 @@ pcb_t *pcb_queue_pop_by_max_prio(ngx_queue_t *list) {
         exit(0);
     }
 
-    for (q = ngx_queue_head(list);
-        q != ngx_queue_sentinel(list);
-        q = ngx_queue_next(q)) {
+    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
         if (q == target_node) {
             ngx_queue_remove(q);
             break;
