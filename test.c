@@ -33,11 +33,14 @@ void T1(ngx_queue_t *ready_queue, ngx_queue_t *running_queue, ngx_queue_t *finis
     get_all_pcb(running_queue);
     pcb_t *node;
     node = pcb_queue_pop_only(running_queue);
+
+
     if (node->needtime <= node->round) {
         node->needtime = 0;
         pcb_queue_push_readyORfinished(ready_queue, finished_queue, node);
         return;
     }
+    
     node->needtime = node->needtime - node->round;
     node->prio = node->prio - round;
     pcb_queue_prio_up(ready_queue);
