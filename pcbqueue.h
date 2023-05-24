@@ -17,7 +17,7 @@ void get_all_pcb(ngx_queue_t *list) {//打印队列
     }
     for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
         node = ngx_queue_data(q, pcb_t, list);
-        printf("pid: %s     prio: %d    needtime: %d    state: %d\n", node->name, node->prio, node->needtime, node->state);
+        printf("name: %s     prio: %d    needtime: %d    state: %d\n", node->name, node->prio, node->needtime, node->state);
     }
 }
 
@@ -62,8 +62,8 @@ int pcb_queue_push(ngx_queue_t *list, pcb_t *pcb, int state) {
 }
 
 void pcb_queue_push_readyORfinished(ngx_queue_t *ready_queue, ngx_queue_t *finished_queue, pcb_t *pcb) {
-    if (pcb->needtime <= 0) {
-        memset(pcb, 0, sizeof(pcb_t));
+    if (pcb->needtime == 0) {
+        pcb->prio = -1;
         pcb_queue_push(finished_queue, pcb, p_finished);
     }
     else {
@@ -75,10 +75,6 @@ pcb_t *pcb_queue_pop_by_max_prio(ngx_queue_t *list) {
     ngx_queue_t *q;
     ngx_queue_t *target_node;
     target_node = get_queue_max_prio_node(list);
-
-    if (ngx_queue_empty(list)) {
-        exit(0);
-    }
 
     for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
         if (q == target_node) {
