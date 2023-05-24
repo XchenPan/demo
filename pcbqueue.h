@@ -94,4 +94,13 @@ pcb_t *pcb_queue_pop_only(ngx_queue_t *list) {
     ngx_queue_remove(q);
     return ngx_queue_data(q, pcb_t, list);
 }
+
+void pcb_queue_prio_up(ngx_queue_t *list) {
+    ngx_queue_t *q;
+    pcb_t *node;
+    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
+        node = ngx_queue_data(q, pcb_t, list);
+        node->prio += node->round;
+    }
+}
 #endif  /*__PCBQUEUE_H_*/
