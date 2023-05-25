@@ -7,26 +7,26 @@
 #include <stddef.h>
 #include <stdio.h>
 
-void get_all_pcb(ngx_queue_t *list) {//打印队列
+void get_all_pcb(ngx_queue_t *queue) {//打印队列
     ngx_queue_t *q;
     pcb_t *node;
 
-    if (ngx_queue_empty(list)) {
+    if (ngx_queue_empty(queue)) {
         printf("该队列为空!\n");
         return;
     }
-    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
+    for (q = ngx_queue_head(queue); q != ngx_queue_sentinel(queue); q = ngx_queue_next(q)) {
         node = ngx_queue_data(q, pcb_t, list);
         printf("name: %s     prio: %d    needtime: %d    state: %d\n", node->name, node->prio, node->needtime, node->state);
     }
 }
 
-ngx_queue_t* get_queue_max_prio_node(ngx_queue_t *list) {
+ngx_queue_t* get_queue_max_prio_node(ngx_queue_t *queue) {
     int max_prio = -1;
     ngx_queue_t *q;
     ngx_queue_t *target_node;
     pcb_t *node;
-    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
+    for (q = ngx_queue_head(queue); q != ngx_queue_sentinel(queue); q = ngx_queue_next(q)) {
         node = ngx_queue_data(q, pcb_t, list);
         if (node->prio >= max_prio) {
             max_prio = node->prio;
@@ -36,7 +36,7 @@ ngx_queue_t* get_queue_max_prio_node(ngx_queue_t *list) {
     return target_node;
 }
 
-int pcb_ready_queue_insert(ngx_queue_t *list, char *name, int round, int cputime) {
+int pcb_ready_queue_insert(ngx_queue_t *queue, char *name, int round, int cputime) {
     pcb_t *pcb = (pcb_t*)malloc(sizeof(pcb_t));
     if (pcb == NULL) {
         return -1;
@@ -48,16 +48,16 @@ int pcb_ready_queue_insert(ngx_queue_t *list, char *name, int round, int cputime
     pcb->needtime = cputime;
     pcb->prio = 100 - pcb->needtime;
     pcb->state = p_ready;
-    ngx_queue_insert_tail(list, &pcb->list);
+    ngx_queue_insert_tail(queue, &pcb->list);
     return 0;
 }
 
-int pcb_queue_push(ngx_queue_t *list, pcb_t *pcb, int state) {
+int pcb_queue_push(ngx_queue_t *queue, pcb_t *pcb, int state) {
     if (pcb == NULL) {
         return -1;
     }
     pcb->state = state;
-    ngx_queue_insert_head(list, &pcb->list);
+    ngx_queue_insert_head(queue, &pcb->list);
     return 0;
 }
 
@@ -71,12 +71,12 @@ void pcb_queue_push_readyORfinished(ngx_queue_t *ready_queue, ngx_queue_t *finis
     }
 }
 
-pcb_t *pcb_queue_pop_by_max_prio(ngx_queue_t *list) {
+pcb_t *pcb_queue_pop_by_max_prio(ngx_queue_t *queue) {
     ngx_queue_t *q;
     ngx_queue_t *target_node;
-    target_node = get_queue_max_prio_node(list);
+    target_node = get_queue_max_prio_node(queue);
 
-    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
+    for (q = ngx_queue_head(queue); q != ngx_queue_sentinel(queue); q = ngx_queue_next(q)) {
         if (q == target_node) {
             ngx_queue_remove(q);
             break;
@@ -85,20 +85,20 @@ pcb_t *pcb_queue_pop_by_max_prio(ngx_queue_t *list) {
     return ngx_queue_data(q, pcb_t, list);
 }
 
-pcb_t *pcb_queue_pop_only(ngx_queue_t *list) {
+pcb_t *pcb_queue_pop_only(ngx_queue_t *queue) {
     ngx_queue_t *q;
-    if (ngx_queue_empty(list)) {
+    if (ngx_queue_empty(queue)) {
         return NULL;
     }
-    q = ngx_queue_head(list);
+    q = ngx_queue_head(queue);
     ngx_queue_remove(q);
     return ngx_queue_data(q, pcb_t, list);
 }
 
-void pcb_queue_prio_up(ngx_queue_t *list) {
+void pcb_queue_prio_up(ngx_queue_t *queue) {
     ngx_queue_t *q;
     pcb_t *node;
-    for (q = ngx_queue_head(list); q != ngx_queue_sentinel(list); q = ngx_queue_next(q)) {
+    for (q = ngx_queue_head(queue); q != ngx_queue_sentinel(queue); q = ngx_queue_next(q)) {
         node = ngx_queue_data(q, pcb_t, list);
         node->prio += node->round;
     }

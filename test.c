@@ -42,8 +42,8 @@ void T1(ngx_queue_t *ready_queue, ngx_queue_t *running_queue, ngx_queue_t *finis
     }
     
     node->needtime = node->needtime - node->round;
-    node->prio = node->prio - round;
-    pcb_queue_prio_up(ready_queue);
+    node->prio = node->prio - round;    //使用时间片轮转算法完成进程的调度
+    pcb_queue_prio_up(ready_queue);     //只需要将这两行代码注释；
     pcb_queue_push_readyORfinished(ready_queue, finished_queue, node);
 }
 
