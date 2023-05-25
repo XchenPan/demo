@@ -1,5 +1,4 @@
 #include "pcbqueue.h"
-#include "thread.h"
 
 static int round = 5;
 static int sign = 1;

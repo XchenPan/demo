@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/panchen/Desktop/OS/进程调度/demo",
-      "program": "/home/panchen/Desktop/OS/进程调度/demo/build/Debug/outDebug",
+      "cwd": "/home/panchen/Desktop/操作系统/进程调度/demo",
+      "program": "/home/panchen/Desktop/操作系统/进程调度/demo/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
