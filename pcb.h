@@ -3,7 +3,7 @@
 
 #include "queue.h"
 
-enum { p_ready = 0, p_running, p_finished, };
+enum { p_ready = 0, p_running, p_finished, };       //进程的状态值
 
 typedef struct pcb_s pcb_t;
 struct pcb_s
